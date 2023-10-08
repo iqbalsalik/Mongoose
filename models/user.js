@@ -13,34 +13,42 @@ const userSchema = new Schema({
     },
     cart: {
         items: [{
-             productId: { 
-                type: Schema.Types.ObjectId, 
+            productId: {
+                type: Schema.Types.ObjectId,
                 ref: "Product",
-                required: true 
-            },
-              quantity: { 
-                type: Number, 
                 required: true
-             } 
-            }]
+            },
+            quantity: {
+                type: Number,
+                required: true
+            }
+        }]
     }
 })
 
-userSchema.methods.addToCart = function (product){
-    let newQuantity=1
-        const cartProductIndex = this.cart.items.findIndex(cp=>{
-          return cp.productId.toString()===product._id.toString() 
-        })
-        const updatedCartItems = [...this.cart.items]
-        if(cartProductIndex>=0){
-          newQuantity = this.cart.items[cartProductIndex].quantity+1;
-          updatedCartItems[cartProductIndex].quantity = newQuantity
-        }else{
-          updatedCartItems.push({productId:product._id, quantity:newQuantity})
-        }
-        let updatedCart = {items:updatedCartItems};
-        this.cart = updatedCart
-        return this.save()
+userSchema.methods.addToCart = function (product) {
+    let newQuantity = 1
+    const cartProductIndex = this.cart.items.findIndex(cp => {
+        return cp.productId.toString() === product._id.toString()
+    })
+    const updatedCartItems = [...this.cart.items]
+    if (cartProductIndex >= 0) {
+        newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+        updatedCartItems[cartProductIndex].quantity = newQuantity
+    } else {
+        updatedCartItems.push({ productId: product._id, quantity: newQuantity })
+    }
+    let updatedCart = { items: updatedCartItems };
+    this.cart = updatedCart
+    return this.save()
+}
+
+userSchema.methods.deleteFromCart = function (prodId) {
+    const updatedCart = this.cart.items.filter(i => {
+        return i.productId.toString() !== prodId
+    })
+    this.cart.items = updatedCart;
+    return this.save()
 }
 
 module.exports = mongoose.model("User", userSchema)
