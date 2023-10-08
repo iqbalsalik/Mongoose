@@ -17,7 +17,8 @@ exports.postAddProduct = (req, res, next) => {
     title: title,
     price: price,
     description: description,
-    imageUrl: imageUrl
+    imageUrl: imageUrl,
+    userId: req.user
   })
   product.save()
     .then(result => {
@@ -71,6 +72,8 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.find()
+  // .select("title price")//   THE SELECT METHOD IS USED TO RETRIVE THE DATA FROM DB WITH SPECIFIC KEY
+  // .populate("userId", " name") // POPULATE IS USED IN RELATION TO RETRIVE THE RELATED DATA OR TO RETRIVE SPECIFIC DATA OF RELATED SCHEMA
     .then(products => {
       res.render('admin/products', {
         prods: products,
